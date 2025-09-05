@@ -28,7 +28,7 @@ function Extension() {
   const [status, setStatus] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedVariants, setSelectedVariants] = useState({}); // Track selected variant per product
+  const [selectedVariants, setSelectedVariants] = useState({});
 
   const variantIds = [
     'gid://shopify/ProductVariant/44293023465684',
