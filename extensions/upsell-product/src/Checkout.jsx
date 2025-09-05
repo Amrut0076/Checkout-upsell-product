@@ -13,6 +13,7 @@ import {
   SkeletonImage,
   SkeletonText,
   Select,
+  useSettings,
 } from '@shopify/ui-extensions-react/checkout';
 import { useState, useEffect } from 'react';
 
@@ -25,21 +26,30 @@ function Extension() {
   const applyCartLinesChange = useApplyCartLinesChange();
   const cartLines = useCartLines();
   const { query, i18n } = useApi();
+  const { variant_ids } = useSettings();
   const [status, setStatus] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedVariants, setSelectedVariants] = useState({});
 
-  const variantIds = [
-    'gid://shopify/ProductVariant/44293023465684',
-    'gid://shopify/ProductVariant/44290921103572',
-    'gid://shopify/ProductVariant/44290921332948',
-    'gid://shopify/ProductVariant/44290921726164',
-  ];
-
   useEffect(() => {
     const fetchProductDetails = async () => {
       setLoading(true);
+      const variantIds = variant_ids
+        ? variant_ids.split(',').map((id) => {
+            const trimmedId = id.trim();
+              return /^\d+$/.test(trimmedId)
+              ? `gid://shopify/ProductVariant/${trimmedId}`
+              : trimmedId;
+          }).filter((id) => id.startsWith('gid://shopify/ProductVariant/'))
+        : [];
+
+      if (variantIds.length === 0) {
+        setStatus({ type: 'critical', message: 'No valid variant IDs configured in settings' });
+        setLoading(false);
+        return;
+      }
+
       try {
         const queryString = `
           query ($ids: [ID!]!) {
@@ -68,6 +78,7 @@ function Extension() {
         });
 
         const fetchedProducts = response.data.nodes.reduce((acc, node) => {
+          if (!node) return acc;
           const productTitle = node.product.title;
           const variant = {
             id: node.id,
@@ -104,7 +115,7 @@ function Extension() {
     };
 
     fetchProductDetails();
-  }, [query, i18n]);
+  }, [query, i18n, variant_ids]);
 
   const cartVariantIds = new Set(cartLines.map((line) => line.merchandise.id));
 
@@ -152,7 +163,7 @@ function Extension() {
       {loading ? (
         <ScrollView direction="inline" maxInlineSize="fill" padding="base">
           <InlineStack inlineAlignment="start" blockAlignment="center" spacing="base">
-            {variantIds.map((_, index) => (
+            {Array(4).fill().map((_, index) => (
               <BlockStack
                 key={index}
                 border="base"

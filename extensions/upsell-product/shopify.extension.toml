@@ -50,3 +50,10 @@ api_access = true
 # type = "single_line_text_field"
 # name = "Banner title"
 # description = "Enter a title for the banner"
+
+[extensions.settings]
+[[extensions.settings.fields]]
+key = "variant_ids"
+type = "single_line_text_field"
+name = "Product Variant IDs"
+description = "Enter Shopify Product Variant IDs (e.g., gid://shopify/ProductVariant/123456789) separated by commas"
