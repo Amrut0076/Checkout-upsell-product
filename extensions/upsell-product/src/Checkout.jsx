@@ -20,7 +20,7 @@ export default reactExtension(
   'purchase.checkout.block.render',
   () => <Extension />,
 );
-// ----------------------------------------------------
+
 function Extension() {
   const applyCartLinesChange = useApplyCartLinesChange();
   const cartLines = useCartLines();
