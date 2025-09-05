@@ -21,8 +21,6 @@ export default reactExtension(
   () => <Extension />,
 );
 
-// ------------------------
-
 function Extension() {
   const applyCartLinesChange = useApplyCartLinesChange();
   const cartLines = useCartLines();
